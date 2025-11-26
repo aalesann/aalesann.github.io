@@ -1,149 +1,88 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const startBtn = document.getElementById('start-btn');
+const articles = [
+    {
+        id: 1,
+        title: "Top 10 OWASP Vulnerabilities 2024",
+        category: "pentesting",
+        excerpt: "An in-depth analysis of the latest OWASP Top 10 list. Injection flaws and broken access control top the charts again...",
+        date: "2024-11-20"
+    },
+    {
+        id: 2,
+        title: "Setting up a Blue Team Lab",
+        category: "blue-team",
+        excerpt: "Learn how to build a defensive security lab using SIEM tools like Wazuh and Splunk to detect simulated attacks...",
+        date: "2024-11-18"
+    },
+    {
+        id: 3,
+        title: "Introduction to Quantum Cryptography",
+        category: "crypto",
+        excerpt: "Quantum computing poses a threat to RSA. Explore post-quantum algorithms and how they aim to secure the future...",
+        date: "2024-11-15"
+    },
+    {
+        id: 4,
+        title: "Kali Linux: Essential Tools for Beginners",
+        category: "pentesting",
+        excerpt: "Nmap, Metasploit, Wireshark. A guide to the must-know tools for anyone starting their journey in ethical hacking...",
+        date: "2024-11-10"
+    },
+    {
+        id: 5,
+        title: "Threat Hunting with YARA Rules",
+        category: "blue-team",
+        excerpt: "Write custom YARA rules to identify malware families and indicators of compromise (IoCs) in your network...",
+        date: "2024-11-05"
+    },
+    {
+        id: 6,
+        title: "Understanding Zero Knowledge Proofs",
+        category: "crypto",
+        excerpt: "How to prove you know a secret without revealing the secret itself. The math behind privacy-preserving protocols...",
+        date: "2024-11-01"
+    }
+];
 
-const gridSize = 20;
-const tileCount = canvas.width / gridSize;
+const blogGrid = document.getElementById('blog-grid');
+const filterBtns = document.querySelectorAll('.filter-btn');
 
-let score = 0;
-let snake = [];
-let food = { x: 15, y: 15 };
-let dx = 0;
-let dy = 0;
-let gameInterval;
-let isGameRunning = false;
+function renderArticles(filter = 'all') {
+    blogGrid.innerHTML = '';
 
-function initGame() {
-    snake = [
-        { x: 10, y: 10 },
-        { x: 9, y: 10 },
-        { x: 8, y: 10 }
-    ];
-    score = 0;
-    dx = 1;
-    dy = 0;
-    scoreElement.innerText = `SCORE: ${score.toString().padStart(3, '0')}`;
-    createFood();
-}
+    const filteredArticles = filter === 'all'
+        ? articles
+        : articles.filter(article => article.category === filter);
 
-function createFood() {
-    food.x = Math.floor(Math.random() * tileCount);
-    food.y = Math.floor(Math.random() * tileCount);
-    // Check if food spawns on snake
-    snake.forEach(segment => {
-        if (segment.x === food.x && segment.y === food.y) createFood();
+    filteredArticles.forEach(article => {
+        const card = document.createElement('article');
+        card.className = 'blog-card';
+        card.innerHTML = `
+            <div class="card-tag">${article.category.toUpperCase()}</div>
+            <h3 class="card-title">${article.title}</h3>
+            <p class="card-excerpt">${article.excerpt}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #666; font-size: 0.8rem;">${article.date}</span>
+                <a href="#" class="read-more">READ_LOG ></a>
+            </div>
+        `;
+        blogGrid.appendChild(card);
     });
 }
 
-function drawGame() {
-    if (!isGameRunning) return;
+// Event Listeners
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Update active state
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-    moveSnake();
-    
-    if (checkCollision()) {
-        gameOver();
-        return;
-    }
-
-    clearCanvas();
-    drawFood();
-    drawSnake();
-}
-
-function moveSnake() {
-    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-        score += 10;
-        scoreElement.innerText = `SCORE: ${score.toString().padStart(3, '0')}`;
-        createFood();
-    } else {
-        snake.pop();
-    }
-}
-
-function drawSnake() {
-    snake.forEach((segment, index) => {
-        ctx.fillStyle = index === 0 ? '#ff00ff' : '#00f3ff'; // Pink head, Cyan body
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = ctx.fillStyle;
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
-        ctx.shadowBlur = 0;
+        // Filter articles
+        const filterValue = btn.getAttribute('data-filter');
+        renderArticles(filterValue);
     });
-}
-
-function drawFood() {
-    ctx.fillStyle = '#ffff00'; // Yellow food
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#ffff00';
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
-    ctx.shadowBlur = 0;
-}
-
-function clearCanvas() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function checkCollision() {
-    const head = snake[0];
-    
-    // Wall collision
-    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-        return true;
-    }
-
-    // Self collision
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-function gameOver() {
-    isGameRunning = false;
-    clearInterval(gameInterval);
-    alert(`GAME OVER\nFINAL SCORE: ${score}`);
-    startBtn.innerText = 'RESTART_SYSTEM';
-}
-
-function startGame() {
-    if (isGameRunning) return;
-    initGame();
-    isGameRunning = true;
-    startBtn.innerText = 'SYSTEM_RUNNING...';
-    if (gameInterval) clearInterval(gameInterval);
-    gameInterval = setInterval(drawGame, 100);
-}
-
-document.addEventListener('keydown', (e) => {
-    if (!isGameRunning) return;
-    
-    switch(e.key) {
-        case 'ArrowUp':
-            if (dy !== 1) { dx = 0; dy = -1; }
-            break;
-        case 'ArrowDown':
-            if (dy !== -1) { dx = 0; dy = 1; }
-            break;
-        case 'ArrowLeft':
-            if (dx !== 1) { dx = -1; dy = 0; }
-            break;
-        case 'ArrowRight':
-            if (dx !== -1) { dx = 1; dy = 0; }
-            break;
-    }
 });
 
-startBtn.addEventListener('click', startGame);
-
-// Initial draw
-clearCanvas();
-ctx.fillStyle = '#00f3ff';
-ctx.font = '20px Orbitron';
-ctx.fillText('PRESS START', 130, 200);
+// Initial Render
+document.addEventListener('DOMContentLoaded', () => {
+    renderArticles();
+});
