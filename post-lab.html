@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montando tu primer laboratorio - SecBlog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">☰</div>
+                <div class="logo-text">
+                    <span>SecBlog</span>
+                    <span>Hacking ético & defensa</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="index.html#blog">Artículos</a>
+                <a href="quiz.html">Juego</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <article class="post-content">
+            <h1>Montando tu primer laboratorio de hacking ético en casa</h1>
+            <div class="post-meta">Nivel: Principiante · Tiempo de lectura: 15 min · Stack: VirtualBox + Kali +
+                Metasploitable</div>
+
+            <p>
+                Antes de lanzar cualquier exploit o escáner, necesitás un entorno seguro. Atacar sistemas sin permiso es
+                ilegal y puede tener consecuencias graves.
+                Un <strong>Home Lab</strong> es tu gimnasio personal: un lugar donde podés romper cosas, infectar
+                máquinas y probar ataques sin riesgos legales ni técnicos para terceros.
+            </p>
+
+            <h2>1. Arquitectura del Laboratorio</h2>
+            <p>
+                El objetivo es simular una red real. Para esto, usaremos virtualización. Tu computadora física (Host)
+                alojará dos o más computadoras virtuales (Guests).
+            </p>
+            <ul>
+                <li><strong>Máquina Atacante:</strong> Será tu estación de trabajo. Usaremos <strong>Kali
+                        Linux</strong>, que ya viene con miles de herramientas preinstaladas.</li>
+                <li><strong>Máquina Víctima:</strong> Un sistema vulnerable por diseño. Usaremos <strong>Metasploitable
+                        2</strong> o <strong>DVWA</strong>.</li>
+            </ul>
+
+            <h2>2. Herramientas Necesarias</h2>
+            <p>Descarga el siguiente software (todo es gratuito):</p>
+            <ul>
+                <li><strong>VirtualBox:</strong> El hipervisor que correrá las máquinas virtuales. <a href="#">Descargar
+                        aquí</a>.</li>
+                <li><strong>Kali Linux VirtualBox Image:</strong> Una imagen lista para usar. No bajes la ISO si sos
+                    principiante, bajá la versión "VirtualBox".</li>
+                <li><strong>Metasploitable 2:</strong> Una máquina Linux llena de agujeros de seguridad intencionales.
+                </li>
+            </ul>
+
+            <h2>3. Configuración de Red (¡Muy Importante!)</h2>
+            <p>
+                Este es el paso donde la mayoría falla. Queremos que las máquinas virtuales se vean entre sí, y tengan
+                internet para actualizarse, pero que estén aisladas de tu red doméstica (para no hackear accidentalmente
+                la PC de tu familia).
+            </p>
+            <h3>La Red "NAT Network"</h3>
+            <p>
+                En VirtualBox, no uses "NAT" a secas (aísla las VMs entre sí) ni "Bridged" (expone las VMs a tu red
+                real).
+            </p>
+            <ol>
+                <li>En VirtualBox, andá a <em>Archivo > Herramientas > Administrador de Red</em>.</li>
+                <li>Creá una nueva red llamada "NatNetwork".</li>
+                <li>Habilitá el DHCP.</li>
+                <li>En la configuración de CADA máquina virtual, andá a <em>Red</em> y seleccioná <strong>"Red
+                        NAT"</strong> (y elegí "NatNetwork").</li>
+            </ol>
+
+            <h2>4. Primeros Pasos con Kali Linux</h2>
+            <p>
+                Una vez que inicies Kali (usuario: <code>kali</code>, password: <code>kali</code>), abrí una terminal.
+                Aquí están tus mejores amigos:
+            </p>
+
+            <h3>Nmap (Network Mapper)</h3>
+            <p>Sirve para descubrir qué equipos hay en la red y qué puertos tienen abiertos.</p>
+            <pre><code># Escaneo rápido para descubrir hosts en la red
+nmap -sn 10.0.2.0/24
+
+# Escaneo de servicios y versiones a una IP específica
+nmap -sV -sC 10.0.2.5</code></pre>
+
+            <h3>Netcat (nc)</h3>
+            <p>La navaja suiza del networking. Sirve para leer y escribir datos a través de la red.</p>
+            <pre><code># Conectarse a un puerto específico
+nc -v 10.0.2.5 80</code></pre>
+
+            <h2>5. Tu primera misión</h2>
+            <p>
+                1. Enciende Metasploitable 2.<br>
+                2. Enciende Kali Linux.<br>
+                3. Desde Kali, usa <code>ifconfig</code> para ver tu IP.<br>
+                4. Usa <code>nmap</code> para encontrar la IP de Metasploitable.<br>
+                5. Escanea los puertos de Metasploitable. ¿Ves el puerto 80 abierto? ¡Intenta abrir esa IP en el
+                navegador Firefox de Kali!
+            </p>
+
+            <div class="post-footer">
+                <a href="index.html" class="btn-ghost">← Volver al inicio</a>
+                <a href="quiz.html" class="btn-primary">Poner a prueba mis conocimientos</a>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SecBlog. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

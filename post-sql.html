@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection - SecBlog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">☰</div>
+                <div class="logo-text">
+                    <span>SecBlog</span>
+                    <span>Hacking ético & defensa</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="index.html#blog">Artículos</a>
+                <a href="quiz.html">Juego</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <article class="post-content">
+            <h1>SQL Injection: Guía completa de explotación y defensa</h1>
+            <div class="post-meta">Nivel: Intermedio · Tiempo de lectura: 12 min · OWASP A03:2021</div>
+
+            <p>
+                La inyección SQL (SQLi) es una vulnerabilidad que permite a un atacante interferir con las consultas que
+                una aplicación hace a su base de datos.
+                A pesar de ser conocida desde hace décadas, sigue siendo una de las formas más comunes de robar datos
+                sensibles.
+            </p>
+
+            <h2>1. Anatomía de una Inyección SQL</h2>
+            <p>
+                El problema raíz es la <strong>falta de separación entre datos y código</strong>. Cuando una aplicación
+                concatena la entrada del usuario directamente en una sentencia SQL, el usuario puede manipular la
+                estructura de esa sentencia.
+            </p>
+
+            <h3>Código Vulnerable (PHP)</h3>
+            <pre><code>$username = $_POST['user'];
+// MAL: Concatenación directa
+$sql = "SELECT * FROM users WHERE username = '" . $username . "'";
+$result = $conn->query($sql);</code></pre>
+
+            <p>
+                Si el usuario ingresa <code>admin' --</code>, la consulta final queda:
+            </p>
+            <pre><code>SELECT * FROM users WHERE username = 'admin' --'</code></pre>
+            <p>
+                El <code>--</code> comenta el resto de la consulta (eliminando la verificación de contraseña, por
+                ejemplo). ¡Acceso concedido como admin!
+            </p>
+
+            <h2>2. Tipos de Ataques SQLi</h2>
+
+            <h3>In-band SQLi (Clásico)</h3>
+            <p>El atacante usa el mismo canal de comunicación para lanzar el ataque y recibir los resultados.</p>
+            <ul>
+                <li><strong>Error-based:</strong> Se fuerza a la base de datos a generar un error que revele información
+                    sobre su estructura.</li>
+                <li><strong>Union-based:</strong> Se usa el operador <code>UNION</code> para combinar los resultados de
+                    la consulta original con los resultados de una consulta inyectada.</li>
+            </ul>
+            <pre><code>' UNION SELECT username, password FROM users --</code></pre>
+
+            <h3>Blind SQLi (Ciego)</h3>
+            <p>La aplicación no devuelve datos de la base de datos en la pantalla, pero responde diferente dependiendo
+                de si la consulta es verdadera o falsa.</p>
+            <ul>
+                <li><strong>Boolean-based:</strong> "¿El primer caracter de la contraseña es 'A'?" Si la página carga
+                    normal, es SÍ. Si da error 404, es NO.</li>
+                <li><strong>Time-based:</strong> "Si la contraseña empieza con 'A', espera 10 segundos". Si la respuesta
+                    tarda, sabemos que es verdad.</li>
+            </ul>
+
+            <h2>3. Login Bypass: Paso a Paso</h2>
+            <p>Imagina un formulario de login simple. El objetivo es entrar sin saber la contraseña.</p>
+            <ol>
+                <li><strong>Identificar el punto de entrada:</strong> El campo de usuario o contraseña.</li>
+                <li><strong>Probar caracteres especiales:</strong> Ingresa <code>'</code> o <code>"</code>. Si ves un
+                    error de base de datos, ¡es vulnerable!</li>
+                <li><strong>Inyectar el payload:</strong> Prueba con <code>' OR 1=1 --</code>.</li>
+                <li><strong>Explicación:</strong> <code>OR 1=1</code> es una condición que siempre es verdadera. La base
+                    de datos aceptará la condición y te dejará pasar.</li>
+            </ol>
+
+            <h2>4. Cómo defenderse (De verdad)</h2>
+            <p>
+                Olvídate de "limpiar" las entradas con regex o funciones de escape manuales. La única solución robusta
+                son las <strong>Consultas Parametrizadas</strong> (Prepared Statements).
+            </p>
+
+            <h3>Código Seguro (PHP PDO)</h3>
+            <pre><code>$stmt = $pdo->prepare('SELECT * FROM users WHERE username = :user');
+// BIEN: Los datos se envían separados de la consulta
+$stmt->execute(['user' => $username]);
+$user = $stmt->fetch();</code></pre>
+
+            <p>
+                En este caso, la base de datos trata la entrada <code>admin' --</code> literalmente como una cadena de
+                texto, no como comandos SQL. El ataque falla.
+            </p>
+
+            <div class="post-footer">
+                <a href="index.html" class="btn-ghost">← Volver al inicio</a>
+                <a href="quiz.html" class="btn-primary">Ir al Quiz</a>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SecBlog. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

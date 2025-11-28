@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buenas Prácticas de Seguridad - SecBlog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">☰</div>
+                <div class="logo-text">
+                    <span>SecBlog</span>
+                    <span>Hacking ético & defensa</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="index.html#blog">Artículos</a>
+                <a href="quiz.html">Juego</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <article class="post-content">
+            <h1>Buenas prácticas para desarrolladores: Seguridad desde el diseño</h1>
+            <div class="post-meta">Nivel: Todos · Tiempo de lectura: 10 min · DevSecOps</div>
+
+            <p>
+                Históricamente, la seguridad era un obstáculo al final del desarrollo. Hoy, con DevOps y entregas
+                continuas, la seguridad debe estar integrada ("Shift Left").
+                Aquí tienes los pilares fundamentales para escribir código seguro.
+            </p>
+
+            <h2>1. Validación de Entradas (Input Validation)</h2>
+            <p>
+                "Never trust user input". Todo dato que venga de fuera (formularios, APIs, parámetros URL) es
+                potencialmente malicioso.
+            </p>
+            <ul>
+                <li><strong>Whitelisting (Lista blanca):</strong> Acepta solo lo que sabes que es bueno. Ej: "El campo
+                    edad solo acepta números del 1 al 120".</li>
+                <li><strong>Blacklisting (Lista negra):</strong> Intentar bloquear "lo malo" (ej. bloquear la palabra
+                    'script') casi siempre falla porque los atacantes encuentran formas de evadirlo.</li>
+            </ul>
+            <pre><code>// Ejemplo de validación estricta (Node.js)
+if (!/^[a-zA-Z0-9]+$/.test(username)) {
+    throw new Error("Usuario inválido: solo letras y números.");
+}</code></pre>
+
+            <h2>2. Prevención de XSS (Cross-Site Scripting)</h2>
+            <p>
+                XSS ocurre cuando un atacante logra ejecutar JavaScript en el navegador de otros usuarios. Para
+                prevenirlo, debes usar <strong>Context-Aware Output Encoding</strong>.
+            </p>
+            <p>
+                Esto significa que antes de mostrar un dato en el HTML, debes convertir los caracteres especiales en sus
+                entidades HTML seguras.
+            </p>
+            <ul>
+                <li><code>&lt;</code> se convierte en <code>&amp;lt;</code></li>
+                <li><code>&gt;</code> se convierte en <code>&amp;gt;</code></li>
+                <li><code>"</code> se convierte en <code>&amp;quot;</code></li>
+            </ul>
+            <p>
+                <em>Tip:</em> Frameworks modernos como React, Vue o Angular hacen esto automáticamente por defecto. ¡No
+                uses <code>dangerouslySetInnerHTML</code> o <code>v-html</code> a menos que sea estrictamente necesario!
+            </p>
+
+            <h2>3. Gestión de Secretos y Autenticación</h2>
+            <p>
+                El manejo de contraseñas y claves es crítico.
+            </p>
+            <ul>
+                <li><strong>Nunca guardes contraseñas en texto plano.</strong> Usa algoritmos de hashing lentos y con
+                    salt, como <strong>Argon2</strong> o <strong>Bcrypt</strong>. MD5 y SHA-1 están muertos.</li>
+                <li><strong>No hardcodees credenciales.</strong> Las API Keys de AWS o de bases de datos no van en el
+                    código. Usa variables de entorno (<code>.env</code>).</li>
+            </ul>
+
+            <h2>4. Cabeceras de Seguridad (Security Headers)</h2>
+            <p>
+                Puedes endurecer tu aplicación web simplemente configurando las cabeceras HTTP correctas en tu servidor
+                (Nginx, Apache, Express).
+            </p>
+            <pre><code># Ejemplo de cabeceras recomendadas
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY</code></pre>
+
+            <h2>5. Dependencias y Supply Chain</h2>
+            <p>
+                Tu código es solo el 10% de tu aplicación. El resto son librerías de terceros (npm, pip, maven).
+            </p>
+            <p>
+                Usa herramientas como <code>npm audit</code>, <strong>Snyk</strong> o <strong>OWASP Dependency
+                    Check</strong> en tu pipeline de CI/CD para detectar si estás usando librerías con vulnerabilidades
+                conocidas.
+            </p>
+
+            <div class="post-footer">
+                <a href="index.html" class="btn-ghost">← Volver al inicio</a>
+                <a href="quiz.html" class="btn-primary">Demostrar lo aprendido</a>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SecBlog. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

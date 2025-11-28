@@ -1,18 +1,23 @@
-# CyberCloud & Snake
+# SecBlog - Blog de Ciberseguridad
 
-A cyberpunk-themed website about Cloud Computing featuring a playable Snake game.
+Este proyecto es un blog educativo sobre hacking ético y ciberseguridad. Incluye artículos detallados y un juego de preguntas (Quiz) para poner a prueba los conocimientos.
 
-## Features
-- **Cyberpunk Aesthetic**: Neon colors, scanlines, and glitch effects.
-- **Cloud Computing Info**: Educational content about Cloud concepts.
-- **Neural Snake**: A classic Snake game with a futuristic twist.
+## Estructura del Proyecto
 
-## How to Run Locally
-1. Clone the repository or download the files.
-2. Open `index.html` in your web browser.
+- **index.html**: Página principal con la lista de artículos destacados y acceso al juego.
+- **post-lab.html**: Artículo sobre cómo montar un laboratorio de hacking.
+- **post-sql.html**: Artículo sobre SQL Injection.
+- **post-secure-coding.html**: Artículo sobre buenas prácticas de desarrollo seguro.
+- **quiz.html**: Página del juego de preguntas.
+- **quiz.js**: Lógica del juego (10 preguntas, puntaje).
+- **style.css**: Estilos globales del sitio.
 
-## Deployment to GitHub Pages
-1. Push this repository to GitHub.
-2. Go to **Settings** > **Pages**.
-3. Select the `main` branch as the source.
-4. Save and wait for the deployment to complete.
+## Características
+
+- Diseño responsivo y moderno (Cyberpunk/Dark theme).
+- Navegación entre posts individuales.
+- Quiz interactivo con puntuación final.
+
+## Cómo usar
+
+Simplemente abre el archivo `index.html` en tu navegador web favorito.

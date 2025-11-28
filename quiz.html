@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Ciberseguridad - SecBlog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-icon">☰</div>
+                <div class="logo-text">
+                    <span>SecBlog</span>
+                    <span>Hacking ético & defensa</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Inicio</a>
+                <a href="index.html#blog">Artículos</a>
+                <a href="quiz.html" class="active">Juego</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="game-container" id="quiz-app">
+            <div class="game-header">
+                <h2 class="game-title">Desafío de Conocimiento</h2>
+                <span class="game-status" id="progress">Pregunta 1 de 10</span>
+            </div>
+
+            <div id="quiz-content">
+                <p class="question" id="question-text">Cargando pregunta...</p>
+                <div class="answers" id="answers-container">
+                    <!-- Respuestas generadas por JS -->
+                </div>
+            </div>
+
+            <div class="game-footer">
+                <span id="score-display">Puntaje: 0</span>
+                <button class="btn-small" id="restart-btn" style="display: none;">Reiniciar</button>
+            </div>
+
+            <div id="final-result" style="display: none; text-align: center; margin-top: 1rem;">
+                <h3>¡Quiz Completado!</h3>
+                <p id="final-score-text"></p>
+                <p id="final-message"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 SecBlog. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="quiz.js"></script>
+</body>
+
+</html>
